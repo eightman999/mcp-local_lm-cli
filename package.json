@@ -50,8 +50,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.5",
-    "@types/bun": "latest",
-    "bun": "^1.0.0",
+    "@types/bun": "^1.1.13",
+    "bun": "^1.1.13",
     "lefthook": "^1.11.14",
     "markdownlint-cli2": "^0.18.1",
     "typescript": "^5.0.0"

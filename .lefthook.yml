@@ -2,14 +2,14 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      run: bun run lint
+      run: npm run lint
     lint-md:
-      run: bun run lint:md
+      run: npm run lint:md
     format-check:
-      run: bun run format
+      run: npm run format
 
 pre-push:
   parallel: true
   commands:
     build:
-      run: bun run build
+      run: npm run build
