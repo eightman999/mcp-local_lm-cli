@@ -208,6 +208,22 @@ export async function executeOllamaGenerate(
   }
 }
 
+// Function to execute a simple health check with Ollama
+export async function executeSimpleHealthCheck(model?: string): Promise<boolean> {
+  try {
+    const testModel = model || "llama3:latest";
+    const response = await ollama.generate({
+      model: testModel,
+      prompt: "1",
+      stream: false,
+    });
+    return response.response.length > 0;
+  } catch (error) {
+    console.error(`Health check failed: ${error instanceof Error ? error.message : String(error)}`);
+    return false;
+  }
+}
+
 // Zod schema for search tool parameters
 export const SearchParametersSchema = z.object({
   query: z.string().describe("The search query or question to ask the LLM."),
@@ -717,6 +733,6 @@ async function main() {
 }
 
 // Only run main if this file is being executed directly
-if (import.meta.main) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }

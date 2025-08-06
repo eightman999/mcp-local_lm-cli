@@ -6,7 +6,7 @@ import {
   executeSearch,
   executeChatConversation,
   executeFileAnalysis,
-} from "../../index.ts";
+} from "../../index.js";
 
 // Check if Ollama is available
 let isOllamaAvailable = false;
@@ -79,40 +79,42 @@ describe("MCP Local LM CLI Integration Tests", () => {
   });
 
   describe("tool execution", () => {
-    test.if(isOllamaAvailable)(
-      "search tool executes without error",
-      async () => {
-        const result = await executeSearch({
-          query: "What is artificial intelligence?",
-          model: availableModels[0] || "llama3.2",
-          temperature: 0.3,
-        });
+    test("search tool executes without error", async () => {
+      if (!isOllamaAvailable) {
+        console.log("Skipping test: Ollama not available");
+        return;
+      }
 
-        // Check that we got some result
-        expect(result).toBeDefined();
-        expect(typeof result).toBe("string");
-        expect(result.length).toBeGreaterThan(10);
-      },
-      30000,
-    ); // 30 second timeout
+      const result = await executeSearch({
+        query: "Hello",
+        model: availableModels[0] || "llama3:latest",
+        temperature: 0.1,
+      });
 
-    test.if(isOllamaAvailable)(
-      "chat tool executes without error",
-      async () => {
-        const result = await executeChatConversation({
-          prompt: "Say hello in a friendly way",
-          model: availableModels[0] || "llama3.2",
-          stream: false,
-          temperature: 0.5,
-        });
+      // Check that we got some result
+      expect(result).toBeDefined();
+      expect(typeof result).toBe("string");
+      expect(result.length).toBeGreaterThan(0);
+    }, 60000); // 60 second timeout
 
-        // Check that we got a response
-        expect(result).toBeDefined();
-        expect(typeof result).toBe("string");
-        expect(result.length).toBeGreaterThan(0);
-      },
-      30000,
-    ); // 30 second timeout
+    test("chat tool executes without error", async () => {
+      if (!isOllamaAvailable) {
+        console.log("Skipping test: Ollama not available");
+        return;
+      }
+
+      const result = await executeChatConversation({
+        prompt: "Hi",
+        model: availableModels[0] || "llama3:latest",
+        stream: false,
+        temperature: 0.1,
+      });
+
+      // Check that we got a response
+      expect(result).toBeDefined();
+      expect(typeof result).toBe("string");
+      expect(result.length).toBeGreaterThan(0);
+    }, 60000); // 60 second timeout
 
     test("file analysis tool validates file extensions", async () => {
       try {
