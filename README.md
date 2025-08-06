@@ -49,7 +49,7 @@ ollama serve
 ### 2. Add the MCP server
 
 ```bash
-claude mcp add -s project local-lm-cli -- bun run /path/to/mcp-local-lm-cli/index.ts
+claude mcp add -s project local-lm-cli -- npx mcp-local-lm-cli --allow-npx
 ```
 
 Or configure your MCP client with the settings shown in the Installation Options section below.
@@ -71,7 +71,13 @@ Example prompts:
 ```bash
 git clone https://github.com/choplin/mcp-local-lm-cli
 cd mcp-local-lm-cli
-bun install
+npm install
+```
+
+1. Build the project:
+
+```bash
+npm run build
 ```
 
 1. Add to Claude Desktop config:
@@ -80,8 +86,8 @@ bun install
 {
   "mcpServers": {
     "mcp-local-lm-cli": {
-      "command": "bun",
-      "args": ["run", "/path/to/mcp-local-lm-cli/index.ts"]
+      "command": "node",
+      "args": ["/path/to/mcp-local-lm-cli/dist/index.js"]
     }
   }
 }
