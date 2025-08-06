@@ -12,7 +12,9 @@
     "mcp-local-lm-cli": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "install.sh",
+    "CLAUDE_DESKTOP_SETUP.md"
   ],
   "keywords": [
     "mcp",
@@ -39,6 +41,8 @@
     "dev": "tsx --watch index.ts",
     "build": "rm -rf dist && tsc && chmod +x dist/index.js",
     "build:prod": "rm -rf dist && tsc && terser dist/index.js -o dist/index.js --compress --mangle && chmod +x dist/index.js",
+    "install:claude": "chmod +x install.sh && ./install.sh",
+    "postinstall": "echo '✅ mcp-local-lm-cli がインストールされました。Claude Desktop用の設定は `npm run install:claude` を実行してください。'",
     "lint": "biome lint .",
     "lint:md": "markdownlint-cli2 '**/*.md'",
     "lint:fix": "biome lint --write .",

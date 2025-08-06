@@ -2,6 +2,22 @@
 
 A simple MCP server wrapper for local LLMs via Ollama that enables AI assistants to use local language models through the Model Context Protocol.
 
+## 🚀 Claude Desktop クイックスタート
+
+### ワンクリックインストール
+
+```bash
+npm install -g mcp-local-lm-cli && npm run install:claude
+```
+
+または：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/choplin/mcp-local-lm-cli/main/install.sh | bash
+```
+
+詳細な手順は [CLAUDE_DESKTOP_SETUP.md](./CLAUDE_DESKTOP_SETUP.md) をご覧ください。
+
 ## What it does
 
 This server exposes three tools that interact with local LLMs via Ollama:
