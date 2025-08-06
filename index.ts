@@ -209,7 +209,9 @@ export async function executeOllamaGenerate(
 }
 
 // Function to execute a simple health check with Ollama
-export async function executeSimpleHealthCheck(model?: string): Promise<boolean> {
+export async function executeSimpleHealthCheck(
+  model?: string,
+): Promise<boolean> {
   try {
     const testModel = model || "llama3:latest";
     const response = await ollama.generate({
@@ -219,7 +221,9 @@ export async function executeSimpleHealthCheck(model?: string): Promise<boolean>
     });
     return response.response.length > 0;
   } catch (error) {
-    console.error(`Health check failed: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(
+      `Health check failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
     return false;
   }
 }
