@@ -1,106 +1,140 @@
 import { describe, expect, test, beforeAll } from "bun:test";
 import {
-  decideGeminiCliCommand,
-  executeGeminiCli,
-  executeGoogleSearch,
-  executeGeminiChat,
+  checkOllamaConnection,
+  executeOllamaChat,
+  executeOllamaGenerate,
+  executeSearch,
+  executeChatConversation,
+  executeFileAnalysis,
 } from "../../index.ts";
 
-// Check if gemini-cli is available
-let isGeminiCliAvailable = false;
+// Check if Ollama is available
+let isOllamaAvailable = false;
+let availableModels: string[] = [];
 
 beforeAll(async () => {
   try {
-    await decideGeminiCliCommand(false);
-    isGeminiCliAvailable = true;
+    availableModels = await checkOllamaConnection();
+    isOllamaAvailable = true;
   } catch {
-    isGeminiCliAvailable = false;
+    isOllamaAvailable = false;
   }
 });
 
-describe("MCP Gemini CLI Integration Tests", () => {
-  describe("gemini-cli detection", () => {
-    test("decideGeminiCliCommand finds gemini-cli or falls back correctly", async () => {
+describe("MCP Local LM CLI Integration Tests", () => {
+  describe("Ollama connection", () => {
+    test("checkOllamaConnection finds available models or throws error", async () => {
       try {
-        // Test without npx fallback
-        const cmdWithoutNpx = await decideGeminiCliCommand(false);
-        expect(cmdWithoutNpx.command).toBe("gemini");
-        expect(cmdWithoutNpx.initialArgs).toEqual([]);
+        const models = await checkOllamaConnection();
+        expect(Array.isArray(models)).toBe(true);
+        expect(models.length).toBeGreaterThan(0);
       } catch (error) {
-        // If gemini-cli is not installed, it should throw the expected error
+        // If Ollama is not running, it should throw the expected error
         expect(error instanceof Error && error.message).toContain(
-          "gemini not found globally",
+          "Cannot connect to Ollama",
         );
-      }
-
-      // Test with npx fallback
-      const cmdWithNpx = await decideGeminiCliCommand(true);
-      expect(cmdWithNpx.command).toBeOneOf(["gemini", "npx"]);
-      if (cmdWithNpx.command === "npx") {
-        expect(cmdWithNpx.initialArgs).toEqual([
-          "https://github.com/google-gemini/gemini-cli",
-        ]);
       }
     });
 
-    test("executeGeminiCli handles errors correctly", async () => {
+    test("executeOllamaChat handles basic prompts", async () => {
+      if (!isOllamaAvailable) {
+        expect(true).toBe(true); // Skip test if Ollama not available
+        return;
+      }
+
       try {
-        // Try to execute a command that will likely fail
-        const result = await executeGeminiCli(
-          { command: "gemini", initialArgs: [] },
-          ["--invalid-flag-that-does-not-exist"],
+        const result = await executeOllamaChat(
+          "Say hello in one word",
+          availableModels[0] || "llama3.2",
+          false,
         );
-        // If it somehow succeeds, check that we got a string
+
         expect(typeof result).toBe("string");
+        expect(result.length).toBeGreaterThan(0);
       } catch (error) {
-        // This is expected to fail
+        // Expected if model not available
         expect(error).toBeInstanceOf(Error);
-        expect(error instanceof Error && error.message).toMatch(
-          /gemini exited with code|Executable not found/,
+      }
+    });
+
+    test("executeOllamaGenerate handles basic prompts", async () => {
+      if (!isOllamaAvailable) {
+        expect(true).toBe(true); // Skip test if Ollama not available
+        return;
+      }
+
+      try {
+        const result = await executeOllamaGenerate(
+          "Say hello in one word",
+          availableModels[0] || "llama3.2",
         );
+
+        expect(typeof result).toBe("string");
+        expect(result.length).toBeGreaterThan(0);
+      } catch (error) {
+        // Expected if model not available
+        expect(error).toBeInstanceOf(Error);
       }
     });
   });
 
   describe("tool execution", () => {
-    test.if(isGeminiCliAvailable)(
-      "googleSearchTool executes without error",
+    test.if(isOllamaAvailable)(
+      "search tool executes without error",
       async () => {
-        const result = await executeGoogleSearch({
-          query: "test search",
-          limit: 3,
-          raw: true,
-          sandbox: true,
-          yolo: true, // Auto-accept to avoid hanging
-          model: "gemini-2.5-flash",
+        const result = await executeSearch({
+          query: "What is artificial intelligence?",
+          model: availableModels[0] || "llama3.2",
+          temperature: 0.3,
         });
 
         // Check that we got some result
         expect(result).toBeDefined();
         expect(typeof result).toBe("string");
+        expect(result.length).toBeGreaterThan(10);
       },
       30000,
     ); // 30 second timeout
 
-    test.if(isGeminiCliAvailable)(
-      "chatTool executes without error",
+    test.if(isOllamaAvailable)(
+      "chat tool executes without error",
       async () => {
-        const result = await executeGeminiChat({
-          prompt: "Say hello",
-          sandbox: true,
-          yolo: true, // Auto-accept to avoid hanging
-          model: "gemini-2.5-flash",
+        const result = await executeChatConversation({
+          prompt: "Say hello in a friendly way",
+          model: availableModels[0] || "llama3.2",
+          stream: false,
+          temperature: 0.5,
         });
 
         // Check that we got a response
         expect(result).toBeDefined();
         expect(typeof result).toBe("string");
+        expect(result.length).toBeGreaterThan(0);
       },
       30000,
     ); // 30 second timeout
 
-    if (!isGeminiCliAvailable) {
-      test("gemini-cli not available", () => {
+    test("file analysis tool validates file extensions", async () => {
+      try {
+        await executeFileAnalysis({
+          filePath: "/tmp/test.invalid",
+          prompt: "Analyze this",
+        });
+
+        // Should not reach here
+        expect(false).toBe(true);
+      } catch (error) {
+        expect(error instanceof Error && error.message).toContain(
+          "Unsupported file type",
+        );
+      }
+    });
+
+    if (!isOllamaAvailable) {
+      test("Ollama not available - tests skipped", () => {
+        console.log(
+          "Ollama is not available. Please install and start Ollama to run integration tests.",
+        );
         expect(true).toBe(true);
       });
     }

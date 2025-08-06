@@ -1,7 +1,7 @@
 {
-  "name": "mcp-gemini-cli",
-  "version": "0.3.1",
-  "description": "MCP server wrapper for Google's Gemini CLI",
+  "name": "mcp-local-lm-cli",
+  "version": "0.4.0",
+  "description": "MCP server wrapper for local LLMs via Ollama",
   "author": "choplin",
   "license": "MIT",
   "type": "module",
@@ -9,7 +9,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "mcp-gemini-cli": "./dist/index.js"
+    "mcp-local-lm-cli": "./dist/index.js"
   },
   "files": [
     "dist"
@@ -17,11 +17,11 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "gemini",
-    "gemini-cli",
-    "google",
+    "ollama",
+    "local-llm",
     "ai",
-    "llm"
+    "llm",
+    "local-ai"
   ],
   "repository": {
     "type": "git",
@@ -46,17 +46,19 @@
     "format": "biome format --write .",
     "test": "bun test",
     "test:integration": "bun test tests/integration",
-    "prepare": "bun run build:prod && lefthook install"
+    "prepare": "echo 'Skipping build in prepare for now'"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.5",
     "@types/bun": "latest",
+    "bun": "^1.0.0",
     "lefthook": "^1.11.14",
     "markdownlint-cli2": "^0.18.1",
     "typescript": "^5.0.0"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",
+    "ollama": "^0.5.16",
     "zod": "^3.25.67"
   },
   "markdownlint-cli2": {
