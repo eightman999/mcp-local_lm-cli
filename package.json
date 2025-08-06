@@ -35,26 +35,28 @@
     "typescript": "^5"
   },
   "scripts": {
-    "start": "bun run index.ts",
-    "dev": "bun --watch run index.ts",
-    "build": "rm -rf dist && bun build --target=node --banner=$'#!/usr/bin/env node\\n' --outdir=dist --sourcemap index.ts",
-    "build:prod": "rm -rf dist && bun build --target=node --banner=$'#!/usr/bin/env node\\n' --outdir=dist --minify --sourcemap=none index.ts",
+    "start": "node dist/index.js",
+    "dev": "tsx --watch index.ts",
+    "build": "rm -rf dist && tsc && chmod +x dist/index.js",
+    "build:prod": "rm -rf dist && tsc && terser dist/index.js -o dist/index.js --compress --mangle && chmod +x dist/index.js",
     "lint": "biome lint .",
     "lint:md": "markdownlint-cli2 '**/*.md'",
     "lint:fix": "biome lint --write .",
     "lint:md:fix": "markdownlint-cli2 --fix '**/*.md'",
     "format": "biome format --write .",
-    "test": "bun test",
-    "test:integration": "bun test tests/integration",
-    "prepare": "echo 'Skipping build in prepare for now'"
+    "test": "vitest",
+    "test:integration": "vitest tests/integration",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.5",
-    "@types/bun": "^1.1.13",
-    "bun": "^1.2.19",
+    "@types/node": "^20.0.0",
     "lefthook": "^1.11.14",
     "markdownlint-cli2": "^0.18.1",
-    "typescript": "^5.0.0"
+    "terser": "^5.24.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",
