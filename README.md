@@ -49,7 +49,7 @@ ollama serve
 ### 2. Add the MCP server
 
 ```bash
-claude mcp add -s project local-lm-cli -- bun run /path/to/mcp-local-lm-cli/index.ts
+claude mcp add -s project local-lm-cli -- npx mcp-local-lm-cli --allow-npx
 ```
 
 Or configure your MCP client with the settings shown in the Installation Options section below.
